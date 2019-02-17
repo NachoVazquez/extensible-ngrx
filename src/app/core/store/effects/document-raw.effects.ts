@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import * as actions from '../actions/document-raw.actions';
 import { map, mergeMap, catchError } from 'rxjs/operators';
+
+import * as actions from '../actions/document-raw.actions';
 @Injectable()
 export class DocumentRawEffects {
   constructor(
@@ -15,7 +16,7 @@ export class DocumentRawEffects {
   @Effect() getById$: Observable<Action> = this.actions$.pipe(
     ofType(actions.GET_BY_ID),
     map((action: actions.GetByIdAction) => action.payload),
-    mergeMap((id: number) => {
+    mergeMap((id: number | string) => {
       return this.documentService.get(id).pipe(
         map(resp => {
           return new actions.GetByIdSuccessAction(resp);

@@ -30,7 +30,7 @@ export function reducer(state = INITIAL_STATE, action: actions.Actions): State {
       };
     }
 
-    case actions.GET_BY_ID_FAIL: {
+    case actions.GET_BY_ID_ERROR: {
       return {
         ...state,
         loading: false

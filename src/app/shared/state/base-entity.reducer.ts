@@ -1,8 +1,8 @@
-import { List, Map } from 'immutable';
 import { BaseEntity } from '../models/base-entity.model';
 import { BaseCrudActionTypeNameFactory } from './base-crud-typename-factory';
-import * as crudActions from './base-crud.actions';
 import { BaseEntityState } from './base-entity.state';
+
+import * as crudActions from './base-crud.actions';
 
 /**
  * Modify the state responding to CRUD Actions.
@@ -13,7 +13,7 @@ import { BaseEntityState } from './base-entity.state';
  * @param action Dispatched Action
  * @returns New State
  */
-export function baseReducer<T extends BaseEntity<any>>(
+export function baseReducer<T extends BaseEntity<string | number>>(
   type: new () => T,
   state: BaseEntityState<T>,
   action: crudActions.CrudActions<T>
