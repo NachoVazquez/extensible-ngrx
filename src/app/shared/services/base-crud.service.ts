@@ -1,46 +1,44 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders
-} from '@angular/common/http';
+import { retryBackoff, RetryBackoffConfig } from 'backoff-rxjs';
 import { Injectable } from '@angular/core';
-
-import { Observable, throwError } from 'rxjs';
-import { catchError, publishLast, refCount } from 'rxjs/operators';
 import {
+  CustomError,
+  UnauthorizedError,
   ServerDown,
   BadInput,
-  NotFoundError,
-  UnauthorizedError,
-  AntError
+  NotFoundError
 } from '../error-handling';
+import { ForbiddenError } from '../error-handling/forbidden-error';
+import { Observable, throwError } from 'rxjs';
+import { publishLast, refCount, catchError } from 'rxjs/operators';
+import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { InternalServerError } from '../error-handling/internal-server.error';
 
-@Injectable()
-export class BaseCrudService<T> {
-  public url: string;
+export abstract class BaseCrudService<T> {
+  protected readonly retryConfig: RetryBackoffConfig = {
+    initialInterval: 1000,
+    shouldRetry: (error: CustomError) => error instanceof ServerDown
+  };
 
-  constructor(url: string, public http: HttpClient) {
-    this.url = url;
-  }
+  constructor(
+    protected readonly url: string,
+    protected readonly http: HttpClient
+  ) {}
 
   public getAll(): Observable<T[]> {
     return this.http.get<T[]>(this.url + '/getAll').pipe(
-      publishLast(),
-      refCount(),
       catchError(error => {
         return this.handleError(error);
-      })
+      }),
+      retryBackoff(this.retryConfig)
     );
   }
 
-  public get(id: any): Observable<T> {
+  public get(id: number | string): Observable<T> {
     return this.http.get<T>(this.url + '/get/' + id).pipe(
-      publishLast(),
-      refCount(),
       catchError(error => {
         return this.handleError(error);
-      })
+      }),
+      retryBackoff(this.retryConfig)
     );
   }
 
@@ -66,41 +64,37 @@ export class BaseCrudService<T> {
       columnsToReturn +
       (tableToQuery ? '&tableToQuery=' + tableToQuery : '');
     return this.http.get<T[]>(fUrl).pipe(
-      publishLast(),
-      refCount(),
       catchError(error => {
         return this.handleError(error);
-      })
+      }),
+      retryBackoff(this.retryConfig)
     );
   }
 
   public create(resource: T): Observable<T> {
     return this.http.post<T>(this.url + '/post/', resource).pipe(
-      publishLast(),
-      refCount(),
       catchError(error => {
         return this.handleError(error);
-      })
+      }),
+      retryBackoff(this.retryConfig)
     );
   }
 
-  public update(id, resource: T): Observable<T> {
+  public update(id: number | string, resource: T): Observable<T> {
     return this.http.put<T>(this.url + '/put/' + id, resource).pipe(
-      publishLast(),
-      refCount(),
       catchError(error => {
         return this.handleError(error);
-      })
+      }),
+      retryBackoff(this.retryConfig)
     );
   }
 
-  public delete(id) {
+  public delete(id: number | string) {
     return this.http.delete<T>(this.url + '/delete/' + id).pipe(
-      publishLast(),
-      refCount(),
       catchError(error => {
         return this.handleError(error);
-      })
+      }),
+      retryBackoff(this.retryConfig)
     );
   }
 
@@ -128,6 +122,6 @@ export class BaseCrudService<T> {
       return throwError(new InternalServerError(error));
     }
 
-    return throwError(new AntError(error));
+    return throwError(new CustomError(error));
   }
 }
