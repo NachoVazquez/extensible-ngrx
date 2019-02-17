@@ -5,6 +5,7 @@ import { Action } from '@ngrx/store';
 function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
   new (): TEntity;
 }): string {
+  // Necessary tight coupling
   return new type().constructor.name;
 }
 
@@ -69,7 +70,7 @@ export class GetByIdErrorAction<TEntity extends BaseEntity<TKey>, TKey>
 export class GetAllAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
   readonly type = this.getType();
-  public readonly payload = null;
+  public readonly payload: void;
   constructor(private entityType: new () => TEntity) {}
 
   private getType(): string {
@@ -100,9 +101,11 @@ export class GetAllSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
 export class GetAllErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
   readonly type = this.getType();
-  public readonly payload: void;
 
-  constructor(private entityType: new () => TEntity) {}
+  constructor(
+    private entityType: new () => TEntity,
+    public readonly payload: CustomError
+  ) {}
 
   private getType(): string {
     const typeName = getTypeName(this.entityType);
@@ -110,7 +113,7 @@ export class GetAllErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   }
 }
 
-export class CreateAction<TEntity extends BaseEntity<TKey>, TKey>
+export class CreateAction<TEntity extends BaseEntity<TKey | string>, TKey>
   implements Action {
   readonly type = this.getType();
 
@@ -119,10 +122,7 @@ export class CreateAction<TEntity extends BaseEntity<TKey>, TKey>
    * @param  type The entity clazz
    * @param  payload Contains the entity to create
    */
-  constructor(
-    private entityType: new () => TEntity,
-    public payload: { entityToCreate: TEntity }
-  ) {}
+  constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
   private getType(): string {
     const typeName = getTypeName(this.entityType);
@@ -142,7 +142,7 @@ export class CreateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
    */
   constructor(
     private entityType: new () => TEntity,
-    public payload: { oldId: number | string; createdEntity: TEntity }
+    public payload: { oldId: TKey | string; createdEntity: TEntity }
   ) {}
   private getType(): string {
     const typeName = getTypeName(this.entityType);
@@ -159,7 +159,10 @@ export class CreateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
    * @param type The entity clazz
    * @param payload preassign id (optimistic approach) of the entity that was intended to be created.
    */
-  constructor(private entityType: new () => TEntity, public payload: any) {}
+  constructor(
+    private entityType: new () => TEntity,
+    public payload: TKey | string
+  ) {}
 
   private getType(): string {
     const typeName = getTypeName(this.entityType);
@@ -194,7 +197,7 @@ export class UpdateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   /**
    * Creates an instance of UpdateSuccessAction.
    * @param type The entity clazz
-   * @param payload The updated entity
+   * @param payload The updated entity. We need it in case that it might occur some server side calculations
    */
   constructor(
     private entityType: new () => TEntity,
@@ -230,15 +233,12 @@ export class DeleteAction<TEntity extends BaseEntity<TKey>, TKey>
   /**
    * Creates an instance of DeleteAction.
    * @param type The entity clazz
-   * @param payload Contains the entity to delete, the id of the owner entity which ordered its deletion
-   * (strong dependent) and the type of the owner entity that ordered its deletion.
+   * @param payload Contains the entity to delete.
    */
   constructor(
     private entityType: new () => TEntity,
     public payload: {
       entityToDelete: TEntity;
-      ownerId: any;
-      ownerType: new () => any;
     }
   ) {}
 
@@ -251,7 +251,7 @@ export class DeleteAction<TEntity extends BaseEntity<TKey>, TKey>
 export class DeleteSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
   readonly type = this.getType();
-  public readonly payload: any = null;
+  public readonly payload: void;
 
   /**
    * Creates an instance of DeleteSuccessAction.
@@ -272,7 +272,7 @@ export class DeleteErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   /**
    * Creates an instance of DeleteErrorAction.
    * @param type The entity clazz
-   * @param payload The entity wish deletion Error (For the optimistic approach)
+   * @param payload The entity wish deletion failed (For the optimistic approach)
    */
   constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
