@@ -1,67 +1,119 @@
-export class BaseCrudActionTypeNameFactory {
-  typeName: string;
+import { BaseEntity } from 'src/app/shared/models/base-entity.model';
 
-  constructor(public type: { new (): any }) {
-    this.typeName = new type().constructor.name;
-  }
+export function getCreateActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Create`;
+}
+export function getCreateSuccessActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Create Success`;
+}
+export function getCreateErrorActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Create Error`;
+}
 
-  get Create(): string {
-    return `[${this.typeName}] Create`;
-  }
+export function getGetByIdActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Get By id`;
+}
 
-  get CreateSuccess(): string {
-    return `[${this.typeName}] Create Success`;
-  }
+export function getGetByIdSuccessActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Get By id Success`;
+}
+export function getGetByIdErrorActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Get By id Error`;
+}
 
-  get CreateError(): string {
-    return `[${this.typeName}] Create Error`;
-  }
+export function getGetAllActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Get All`;
+}
+export function getGetAllSuccessActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Get All Success`;
+}
+export function getGetAllErrorActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Get All Error`;
+}
+export function getUpdateActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Update`;
+}
+export function getUpdateSuccessActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Update Success`;
+}
+export function getUpdateErrorActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Update Error`;
+}
 
-  get GetById(): string {
-    return `[${this.typeName}] Get By id`;
-  }
+export function getDeleteActionActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Delete`;
+}
 
-  get GetByIdSuccess(): string {
-    return `[${this.typeName}] Get By id Success`;
-  }
+export function getDeleteSuccessActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Delete Success`;
+}
 
-  get GetByIdError(): string {
-    return `[${this.typeName}] Get By id Error`;
-  }
+export function getDeleteErrorActionName<
+  TEntity extends BaseEntity<TKey>,
+  TKey
+>(type: { new (): TEntity }): string {
+  const typeName = getTypeName(type);
+  return `[${typeName}] Delete Error`;
+}
 
-  get GetAll(): string {
-    return `[${this.typeName}] Get All`;
-  }
-
-  get GetAllSuccess(): string {
-    return `[${this.typeName}] Get All Success`;
-  }
-
-  get GetAllError(): string {
-    return `[${this.typeName}] Get All Error`;
-  }
-
-  get Update(): string {
-    return `[${this.typeName}] Update`;
-  }
-
-  get UpdateSuccess(): string {
-    return `[${this.typeName}] Update Success`;
-  }
-
-  get UpdateError(): string {
-    return `[${this.typeName}] Update Error`;
-  }
-
-  get Delete(): string {
-    return `[${this.typeName}] Delete`;
-  }
-
-  get DeleteSuccess(): string {
-    return `[${this.typeName}] Delete Success`;
-  }
-
-  get DeleteError(): string {
-    return `[${this.typeName}] Delete Error`;
-  }
+function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
+  new (): TEntity;
+}): string {
+  return new type().constructor.name;
 }
