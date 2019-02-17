@@ -1,76 +1,118 @@
+import { BaseEntity } from 'src/app/shared/models/base-entity.model';
 import { CustomError } from './../error-handling/custom-error';
 import { Action } from '@ngrx/store';
-import { BaseCrudActionTypeNameFactory } from './base-crud-typename-factory';
 
-export class GetByIdAction<TEntity, TKey> implements Action {
-  public readonly type: string;
+function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
+  new (): TEntity;
+}): string {
+  return new type().constructor.name;
+}
+
+export class GetByIdAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   /**
    * Creates an instance of GetByIdAction.
-   * @param type The entity clazz
+   * @param entityType The entity clazz
    * @param payload Id of the entity to look up.
    */
-  constructor(type: new () => TEntity, public readonly payload: TKey) {
-    this.type = new BaseCrudActionTypeNameFactory(type).GetById;
+  constructor(
+    private entityType: new () => TEntity,
+    public readonly payload: TKey
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Get By id`;
   }
 }
 
-export class GetByIdSuccessAction<TEntity> implements Action {
-  public readonly type: string;
+export class GetByIdSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of GetByIdSuccessAction.
-   * @param  type The entity clazz
+   * @param  entityType The entity clazz
    * @param  payload The entity instance fetched from server containing the requested properties.
    */
-  constructor(type: new () => TEntity, public readonly payload: TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).GetByIdSuccess;
+  constructor(
+    private entityType: new () => TEntity,
+    public readonly payload: TEntity
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Get By id Success`;
   }
 }
 
-export class GetByIdErrorAction<TEntity> implements Action {
-  public readonly type: string;
+export class GetByIdErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of GetByIdErrorAction.
    * @param type The entity clazz
    * @param  payload The error.
    */
-  constructor(type: new () => TEntity, public readonly payload: CustomError) {
-    this.type = new BaseCrudActionTypeNameFactory(type).GetById;
+  constructor(
+    private entityType: new () => TEntity,
+    public readonly payload: CustomError
+  ) {}
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Get By id Error`;
   }
 }
 
-export class GetAllAction<TEntity> implements Action {
-  public readonly type: string;
+export class GetAllAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   public readonly payload = null;
-  constructor(type: new () => TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).GetAll;
+  constructor(private entityType: new () => TEntity) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Get All`;
   }
 }
 
-export class GetAllSuccessAction<TEntity> implements Action {
-  public readonly type: string;
+export class GetAllSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   /**
    * Creates an instance of GetAllSuccessAction.
    * @param type The entity clazz
    * @param payload The fetched elements
    */
-  constructor(type: new () => TEntity, public readonly payload: TEntity[]) {
-    this.type = new BaseCrudActionTypeNameFactory(type).GetAllSuccess;
+  constructor(
+    private entityType: new () => TEntity,
+    public readonly payload: TEntity[]
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Get All Success`;
   }
 }
 
-export class GetAllErrorAction<TEntity> implements Action {
-  public readonly type: string;
+export class GetAllErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   public readonly payload: void;
 
-  constructor(type: new () => TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).GetAllError;
+  constructor(private entityType: new () => TEntity) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Get All Error`;
   }
 }
 
-export class CreateAction<TEntity> implements Action {
-  public readonly type: string;
+export class CreateAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of CreateAction.
@@ -78,15 +120,19 @@ export class CreateAction<TEntity> implements Action {
    * @param  payload Contains the entity to create
    */
   constructor(
-    type: new () => TEntity,
+    private entityType: new () => TEntity,
     public payload: { entityToCreate: TEntity }
-  ) {
-    this.type = new BaseCrudActionTypeNameFactory(type).Create;
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Create`;
   }
 }
 
-export class CreateSuccessAction<TEntity> implements Action {
-  public readonly type: string;
+export class CreateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of CreateSuccessAction.
@@ -95,28 +141,35 @@ export class CreateSuccessAction<TEntity> implements Action {
    *  to be created (optimistic creation) and the entity created.
    */
   constructor(
-    type: new () => TEntity,
+    private entityType: new () => TEntity,
     public payload: { oldId: number | string; createdEntity: TEntity }
-  ) {
-    this.type = new BaseCrudActionTypeNameFactory(type).CreateSuccess;
+  ) {}
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Create Success`;
   }
 }
 
-export class CreateErrorAction<TEntity> implements Action {
-  public readonly type: string;
+export class CreateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of CreateErrorAction.
    * @param type The entity clazz
    * @param payload preassign id (optimistic approach) of the entity that was intended to be created.
    */
-  constructor(type: new () => TEntity, public payload: any) {
-    this.type = new BaseCrudActionTypeNameFactory(type).CreateError;
+  constructor(private entityType: new () => TEntity, public payload: any) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Create Error`;
   }
 }
 
-export class UpdateAction<TEntity> implements Action {
-  public readonly type: string;
+export class UpdateAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   /**
    * Creates an instance of UpdateAction.
    * @param type The entity clazz
@@ -124,40 +177,55 @@ export class UpdateAction<TEntity> implements Action {
    *  new values and the original entity.
    */
   constructor(
-    type: new () => TEntity,
+    private entityType: new () => TEntity,
     public payload: { oldEntity: TEntity; newEntity: TEntity }
-  ) {
-    this.type = new BaseCrudActionTypeNameFactory(type).Update;
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Update`;
   }
 }
 
-export class UpdateSuccessAction<TEntity> implements Action {
-  public readonly type: string;
+export class UpdateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of UpdateSuccessAction.
    * @param type The entity clazz
    * @param payload The updated entity
    */
-  constructor(type: new () => TEntity, public readonly payload: TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).UpdateSuccess;
+  constructor(
+    private entityType: new () => TEntity,
+    public readonly payload: TEntity
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Update Success`;
   }
 }
 
-export class UpdateErrorAction<TEntity> implements Action {
-  public readonly type: string;
+export class UpdateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   /**
    * Creates an instance of UpdateErrorAction.
    * @param type The entity clazz
    * @param  payload Entity which updating Error containing original values (For optimistic approach)
    */
-  constructor(type: new () => TEntity, public payload: TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).UpdateError;
+  constructor(private entityType: new () => TEntity, public payload: TEntity) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Update Error`;
   }
 }
 
-export class DeleteAction<TEntity> implements Action {
-  public readonly type: string;
+export class DeleteAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of DeleteAction.
@@ -166,56 +234,67 @@ export class DeleteAction<TEntity> implements Action {
    * (strong dependent) and the type of the owner entity that ordered its deletion.
    */
   constructor(
-    type: new () => TEntity,
+    private entityType: new () => TEntity,
     public payload: {
       entityToDelete: TEntity;
       ownerId: any;
       ownerType: new () => any;
     }
-  ) {
-    this.type = new BaseCrudActionTypeNameFactory(type).Delete;
+  ) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Delete`;
   }
 }
 
-export class DeleteSuccessAction<TEntity> implements Action {
-  public readonly type: string;
+export class DeleteSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
   public readonly payload: any = null;
 
   /**
    * Creates an instance of DeleteSuccessAction.
    * @param type The entity clazz
    */
-  constructor(type: new () => TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).DeleteSuccess;
+  constructor(private entityType: new () => TEntity) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Delete Success`;
   }
 }
 
-export class DeleteErrorAction<TEntity> implements Action {
-  public readonly type: string;
+export class DeleteErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+  implements Action {
+  readonly type = this.getType();
 
   /**
    * Creates an instance of DeleteErrorAction.
    * @param type The entity clazz
    * @param payload The entity wish deletion Error (For the optimistic approach)
    */
-  constructor(type: new () => TEntity, public payload: TEntity) {
-    this.type = new BaseCrudActionTypeNameFactory(type).DeleteError;
+  constructor(private entityType: new () => TEntity, public payload: TEntity) {}
+
+  private getType(): string {
+    const typeName = getTypeName(this.entityType);
+    return `[${typeName}] Delete Error`;
   }
 }
 
-export type CrudActions<TEntity> =
-  | CreateAction<TEntity>
-  | CreateSuccessAction<TEntity>
-  | CreateErrorAction<TEntity>
-  | GetAllAction<TEntity>
-  | GetAllErrorAction<TEntity>
-  | GetAllSuccessAction<TEntity>
-  | GetByIdAction<TEntity>
-  | GetByIdSuccessAction<TEntity>
-  | GetByIdErrorAction<TEntity>
-  | UpdateAction<TEntity>
-  | UpdateSuccessAction<TEntity>
-  | UpdateErrorAction<TEntity>
-  | DeleteAction<TEntity>
-  | DeleteSuccessAction<TEntity>
-  | DeleteErrorAction<TEntity>;
+export type CrudActions<TEntity extends BaseEntity<TKey>, TKey> =
+  | CreateAction<TEntity, TKey>
+  | CreateSuccessAction<TEntity, TKey>
+  | CreateErrorAction<TEntity, TKey>
+  | GetAllAction<TEntity, TKey>
+  | GetAllErrorAction<TEntity, TKey>
+  | GetAllSuccessAction<TEntity, TKey>
+  | GetByIdAction<TEntity, TKey>
+  | GetByIdSuccessAction<TEntity, TKey>
+  | GetByIdErrorAction<TEntity, TKey>
+  | UpdateAction<TEntity, TKey>
+  | UpdateSuccessAction<TEntity, TKey>
+  | UpdateErrorAction<TEntity, TKey>
+  | DeleteAction<TEntity, TKey>
+  | DeleteSuccessAction<TEntity, TKey>
+  | DeleteErrorAction<TEntity, TKey>;
