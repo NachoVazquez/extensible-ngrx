@@ -1,3 +1,3 @@
-import { AntError } from './ant-error';
+import { CustomError } from './custom-error';
 
-export class ServerDown extends AntError { }
+export class ServerDown extends CustomError { }

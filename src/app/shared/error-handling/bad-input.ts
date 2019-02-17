@@ -1,3 +1,3 @@
-import { AntError } from './ant-error';
+import { CustomError } from './custom-error';
 
-export class BadInput extends AntError { }
+export class BadInput extends CustomError { }

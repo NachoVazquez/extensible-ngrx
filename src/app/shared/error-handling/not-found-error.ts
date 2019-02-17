@@ -1,3 +1,3 @@
-import { AntError } from './ant-error';
+import { CustomError } from './custom-error';
 
-export class NotFoundError extends AntError {}
+export class NotFoundError extends CustomError {}

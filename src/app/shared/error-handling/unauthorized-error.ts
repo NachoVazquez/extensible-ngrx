@@ -1,4 +1,4 @@
-import { AntError } from './ant-error';
+import { CustomError } from './custom-error';
 
-export class UnauthorizedError extends AntError {}
+export class UnauthorizedError extends CustomError {}
 
