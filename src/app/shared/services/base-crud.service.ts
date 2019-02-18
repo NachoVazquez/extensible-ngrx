@@ -1,5 +1,4 @@
 import { retryBackoff, RetryBackoffConfig } from 'backoff-rxjs';
-import { Injectable } from '@angular/core';
 import {
   CustomError,
   UnauthorizedError,
@@ -7,13 +6,14 @@ import {
   BadInput,
   NotFoundError
 } from '../error-handling';
-import { ForbiddenError } from '../error-handling/forbidden-error';
 import { Observable, throwError } from 'rxjs';
-import { publishLast, refCount, catchError } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { InternalServerError } from '../error-handling/internal-server.error';
+import { ForbiddenError } from '../error-handling/forbidden-error';
+import { BaseEntity } from '../models/base-entity.model';
 
-export abstract class BaseCrudService<T> {
+export abstract class BaseCrudService<TEntity extends BaseEntity<TKey>, TKey> {
   protected readonly retryConfig: RetryBackoffConfig = {
     initialInterval: 1000,
     shouldRetry: (error: CustomError) => error instanceof ServerDown
@@ -24,8 +24,8 @@ export abstract class BaseCrudService<T> {
     protected readonly http: HttpClient
   ) {}
 
-  public getAll(): Observable<T[]> {
-    return this.http.get<T[]>(this.url + '/getAll').pipe(
+  public getAll(): Observable<TEntity[]> {
+    return this.http.get<TEntity[]>(`${this.url}/getAll`).pipe(
       catchError(error => {
         return this.handleError(error);
       }),
@@ -33,8 +33,8 @@ export abstract class BaseCrudService<T> {
     );
   }
 
-  public get(id: number | string): Observable<T> {
-    return this.http.get<T>(this.url + '/get/' + id).pipe(
+  public get(id: TKey): Observable<TEntity> {
+    return this.http.get<TEntity>(`${this.url}/get/${id}`).pipe(
       catchError(error => {
         return this.handleError(error);
       }),
@@ -42,28 +42,8 @@ export abstract class BaseCrudService<T> {
     );
   }
 
-  public getWithPagAndSort(
-    pageNumber: number,
-    pageSize: number,
-    columnToSort: string,
-    sortDir: string,
-    columnsToReturn: string = '*',
-    tableToQuery: string = null
-  ): Observable<T[]> {
-    const fUrl =
-      this.url +
-      '/getWithPaginationAndFilter?pageNumber=' +
-      pageNumber +
-      '&pageSize=' +
-      pageSize +
-      '&columnNameForSorting=' +
-      columnToSort +
-      '&sortingType=' +
-      sortDir +
-      '&columnsToReturn=' +
-      columnsToReturn +
-      (tableToQuery ? '&tableToQuery=' + tableToQuery : '');
-    return this.http.get<T[]>(fUrl).pipe(
+  public create(resource: TEntity): Observable<TEntity> {
+    return this.http.post<TEntity>(`${this.url}/post/`, resource).pipe(
       catchError(error => {
         return this.handleError(error);
       }),
@@ -71,8 +51,8 @@ export abstract class BaseCrudService<T> {
     );
   }
 
-  public create(resource: T): Observable<T> {
-    return this.http.post<T>(this.url + '/post/', resource).pipe(
+  public update(id: TKey, resource: TEntity): Observable<TEntity> {
+    return this.http.put<TEntity>(`${this.url}/put/${id}`, resource).pipe(
       catchError(error => {
         return this.handleError(error);
       }),
@@ -80,17 +60,8 @@ export abstract class BaseCrudService<T> {
     );
   }
 
-  public update(id: number | string, resource: T): Observable<T> {
-    return this.http.put<T>(this.url + '/put/' + id, resource).pipe(
-      catchError(error => {
-        return this.handleError(error);
-      }),
-      retryBackoff(this.retryConfig)
-    );
-  }
-
-  public delete(id: number | string) {
-    return this.http.delete<T>(this.url + '/delete/' + id).pipe(
+  public delete(id: TKey) {
+    return this.http.delete<TEntity>(`${this.url}/delete/${id}`).pipe(
       catchError(error => {
         return this.handleError(error);
       }),
@@ -99,26 +70,26 @@ export abstract class BaseCrudService<T> {
   }
 
   public handleError(error: HttpErrorResponse) {
-    if (error.status === 0) {
+    if (error.status === ServerDown.statusCode) {
       return throwError(new ServerDown(error));
     }
 
-    if (error.status === 400) {
+    if (error.status === BadInput.statusCode) {
       return throwError(new BadInput(error));
     }
 
-    if (error.status === 404) {
+    if (error.status === NotFoundError.statusCode) {
       return throwError(new NotFoundError(error));
     }
 
-    if (error.status === 401) {
+    if (error.status === UnauthorizedError.statusCode) {
       return throwError(new UnauthorizedError(error));
     }
-    if (error.status === 403) {
-      return throwError(new UnauthorizedError(error));
+    if (error.status === ForbiddenError.statusCode) {
+      return throwError(new ForbiddenError(error));
     }
 
-    if (error.status === 500) {
+    if (error.status === InternalServerError.statusCode) {
       return throwError(new InternalServerError(error));
     }
 
