@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { DocumentModel } from '../models/document.model';
 
 @Injectable({ providedIn: 'root' })
-export class DocumentService extends BaseCrudService<DocumentModel> {
+export class DocumentService extends BaseCrudService<DocumentModel, number> {
   constructor(protected httpClient: HttpClient) {
     super('http://example.com/api/document', httpClient);
   }
