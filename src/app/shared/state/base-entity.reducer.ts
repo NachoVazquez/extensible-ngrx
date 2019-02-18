@@ -1,8 +1,8 @@
 import { BaseEntity } from '../models/base-entity.model';
-import { BaseCrudActionTypeNameFactory } from './base-crud-typename-factory';
 import { BaseEntityState } from './base-entity.state';
 
 import * as crudActions from './base-crud.actions';
+import { DocumentModel } from 'src/app/core/models/document.model';
 
 /**
  * Modify the state responding to CRUD Actions.
@@ -13,31 +13,90 @@ import * as crudActions from './base-crud.actions';
  * @param action Dispatched Action
  * @returns New State
  */
-export function baseReducer<T extends BaseEntity<string | number>>(
-  type: new () => T,
-  state: BaseEntityState<T>,
-  action: crudActions.CrudActions<T>
-): BaseEntityState<T> {
-  // Instantiation of the Action types based on current Entity
-  const actionTypes = new BaseCrudActionTypeNameFactory(type);
-
+export function baseReducer<TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
+  state: BaseEntityState<TEntity, TKey>,
+  action: crudActions.CrudActions<TEntity, TKey>
+): BaseEntityState<TEntity, TKey> {
   if (!action) {
     return state;
   }
 
   switch (action.type) {
-    case actionTypes.GetById:
+    case crudActions.GetByIdAction.getType<TEntity, TKey>(type):
       return { ...state, loading: true };
 
-    case actionTypes.GetByIdSuccess:
+    case crudActions.GetByIdSuccessAction.getType<TEntity, TKey>(type):
+      action = action as crudActions.GetByIdSuccessAction<TEntity, TKey>;
       return {
         ...state,
         loading: false,
-        entities: [...state.entities, action.payload]
+        entities: state.entities.set(action.payload.id, action.payload)
       };
 
-    case actionTypes.GetByIdFailed:
+    case crudActions.GetByIdErrorAction.getType(type):
       return { ...state, loading: false };
+
+    case crudActions.CreateAction.getType(type):
+      action = action as crudActions.CreateAction<TEntity, TKey>;
+      return {
+        ...state,
+        entities: state.entities.set(action.payload.id, action.payload)
+      };
+
+    case crudActions.CreateSuccessAction.getType(type):
+      action = action as crudActions.CreateSuccessAction<TEntity, TKey>;
+      return {
+        ...state,
+        entities: state.entities
+          .delete(action.payload.tempId)
+          .set(action.payload.createdEntity.id, action.payload.createdEntity)
+      };
+
+    case crudActions.CreateErrorAction.getType(type):
+      action = action as crudActions.CreateErrorAction<TEntity, TKey>;
+
+      return {
+        ...state,
+        entities: state.entities.delete(action.payload)
+      };
+
+    case crudActions.UpdateAction.getType(type):
+      action = action as crudActions.UpdateAction<TEntity, TKey>;
+      return {
+        ...state,
+        entities: state.entities.set(
+          action.payload.newEntity.id,
+          action.payload.newEntity
+        )
+      };
+    case crudActions.UpdateSuccessAction.getType(type):
+      action = action as crudActions.UpdateSuccessAction<TEntity, TKey>;
+
+      return {
+        ...state,
+        entities: state.entities.set(action.payload.id, action.payload)
+      };
+    case crudActions.UpdateErrorAction.getType(type):
+      action = action as crudActions.UpdateErrorAction<TEntity, TKey>;
+
+      return {
+        ...state,
+        entities: state.entities.set(action.payload.id, action.payload)
+      };
+    case crudActions.DeleteAction.getType(type):
+      action = action as crudActions.DeleteAction<TEntity, TKey>;
+      return {
+        ...state,
+        entities: state.entities.delete(action.payload.entityToDelete.id)
+      };
+    case crudActions.DeleteErrorAction.getType(type):
+      action = action as crudActions.DeleteErrorAction<TEntity, TKey>;
+
+      return {
+        ...state,
+        entities: state.entities.set(action.payload.id, action.payload)
+      };
 
     default:
       return state;
