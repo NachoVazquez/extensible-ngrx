@@ -2,7 +2,7 @@ import { BaseEntity } from 'src/app/shared/models/base-entity.model';
 import { CustomError } from './../error-handling/custom-error';
 import { Action } from '@ngrx/store';
 
-function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
+export function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
   new (): TEntity;
 }): string {
   // Necessary tight coupling
@@ -11,7 +11,7 @@ function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
 
 export class GetByIdAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = GetByIdAction.getType<TEntity, TKey>(this.entityType);
   /**
    * Creates an instance of GetByIdAction.
    * @param entityType The entity clazz
@@ -22,15 +22,17 @@ export class GetByIdAction<TEntity extends BaseEntity<TKey>, TKey>
     public readonly payload: TKey
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Get By id`;
   }
 }
 
 export class GetByIdSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = GetByIdSuccessAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of GetByIdSuccessAction.
@@ -42,15 +44,17 @@ export class GetByIdSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
     public readonly payload: TEntity
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Get By id Success`;
   }
 }
 
 export class GetByIdErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = GetByIdErrorAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of GetByIdErrorAction.
@@ -61,27 +65,31 @@ export class GetByIdErrorAction<TEntity extends BaseEntity<TKey>, TKey>
     private entityType: new () => TEntity,
     public readonly payload: CustomError
   ) {}
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Get By id Error`;
   }
 }
 
 export class GetAllAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = GetAllAction.getType<TEntity, TKey>(this.entityType);
   public readonly payload: void;
   constructor(private entityType: new () => TEntity) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Get All`;
   }
 }
 
 export class GetAllSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = GetAllSuccessAction.getType<TEntity, TKey>(this.entityType);
   /**
    * Creates an instance of GetAllSuccessAction.
    * @param type The entity clazz
@@ -92,30 +100,34 @@ export class GetAllSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
     public readonly payload: TEntity[]
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Get All Success`;
   }
 }
 
 export class GetAllErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = GetAllErrorAction.getType<TEntity, TKey>(this.entityType);
 
   constructor(
     private entityType: new () => TEntity,
     public readonly payload: CustomError
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Get All Error`;
   }
 }
 
-export class CreateAction<TEntity extends BaseEntity<TKey | string>, TKey>
+export class CreateAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = CreateAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of CreateAction.
@@ -124,15 +136,17 @@ export class CreateAction<TEntity extends BaseEntity<TKey | string>, TKey>
    */
   constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Create`;
   }
 }
 
 export class CreateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = CreateSuccessAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of CreateSuccessAction.
@@ -142,37 +156,38 @@ export class CreateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
    */
   constructor(
     private entityType: new () => TEntity,
-    public payload: { oldId: TKey | string; createdEntity: TEntity }
+    public payload: { tempId: string; createdEntity: TEntity }
   ) {}
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Create Success`;
   }
 }
 
 export class CreateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = CreateErrorAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of CreateErrorAction.
    * @param type The entity clazz
    * @param payload preassign id (optimistic approach) of the entity that was intended to be created.
    */
-  constructor(
-    private entityType: new () => TEntity,
-    public payload: TKey | string
-  ) {}
+  constructor(private entityType: new () => TEntity, public payload: string) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Create Error`;
   }
 }
 
 export class UpdateAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = UpdateAction.getType<TEntity, TKey>(this.entityType);
   /**
    * Creates an instance of UpdateAction.
    * @param type The entity clazz
@@ -184,15 +199,17 @@ export class UpdateAction<TEntity extends BaseEntity<TKey>, TKey>
     public payload: { oldEntity: TEntity; newEntity: TEntity }
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Update`;
   }
 }
 
 export class UpdateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = UpdateSuccessAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of UpdateSuccessAction.
@@ -204,15 +221,17 @@ export class UpdateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
     public readonly payload: TEntity
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Update Success`;
   }
 }
 
 export class UpdateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = UpdateErrorAction.getType<TEntity, TKey>(this.entityType);
   /**
    * Creates an instance of UpdateErrorAction.
    * @param type The entity clazz
@@ -220,15 +239,17 @@ export class UpdateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
    */
   constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Update Error`;
   }
 }
 
 export class DeleteAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = DeleteAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of DeleteAction.
@@ -242,15 +263,17 @@ export class DeleteAction<TEntity extends BaseEntity<TKey>, TKey>
     }
   ) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Delete`;
   }
 }
 
 export class DeleteSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = DeleteSuccessAction.getType<TEntity, TKey>(this.entityType);
   public readonly payload: void;
 
   /**
@@ -259,15 +282,17 @@ export class DeleteSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
    */
   constructor(private entityType: new () => TEntity) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Delete Success`;
   }
 }
 
 export class DeleteErrorAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = this.getType();
+  readonly type = DeleteErrorAction.getType<TEntity, TKey>(this.entityType);
 
   /**
    * Creates an instance of DeleteErrorAction.
@@ -276,8 +301,10 @@ export class DeleteErrorAction<TEntity extends BaseEntity<TKey>, TKey>
    */
   constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
-  private getType(): string {
-    const typeName = getTypeName(this.entityType);
+  static getType<TEntity extends BaseEntity<TKey>, TKey>(
+    entityType: new () => TEntity
+  ): string {
+    const typeName = getTypeName(entityType);
     return `[${typeName}] Delete Error`;
   }
 }
