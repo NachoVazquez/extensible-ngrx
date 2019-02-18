@@ -1,3 +1,4 @@
-export abstract class BaseEntity<T> {
-  id: T;
+export abstract class BaseEntity<TKey> {
+  id: TKey;
+  tempId?: string;
 }
