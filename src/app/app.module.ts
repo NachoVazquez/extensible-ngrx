@@ -1,12 +1,11 @@
-import { CoreModule } from './core/core.module';
+import { environment } from './../environments/environment.prod';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
-import { reducers } from './core/store/reducers/index';
-import { effects } from './core/store/effects/index';
+import { effects } from './features/document/state/effects/index';
 import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
@@ -14,9 +13,9 @@ import { EffectsModule } from '@ngrx/effects';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    CoreModule,
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot(effects)
+    // environment.production ? [] : StoreDevtoolsModule.instrument()
   ],
   providers: [],
   bootstrap: [AppComponent]
