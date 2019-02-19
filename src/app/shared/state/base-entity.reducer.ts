@@ -88,7 +88,7 @@ export function baseReducer<TEntity extends BaseEntity<TKey>, TKey>(
       action = action as crudActions.DeleteAction<TEntity, TKey>;
       return {
         ...state,
-        entities: state.entities.delete(action.payload.entityToDelete.id)
+        entities: state.entities.delete(action.payload.id)
       };
     case crudActions.DeleteErrorAction.getType(type):
       action = action as crudActions.DeleteErrorAction<TEntity, TKey>;

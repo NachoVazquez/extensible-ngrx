@@ -61,7 +61,7 @@ export abstract class BaseCrudService<TEntity extends BaseEntity<TKey>, TKey> {
   }
 
   public delete(id: TKey) {
-    return this.http.delete<TEntity>(`${this.url}/delete/${id}`).pipe(
+    return this.http.delete<void>(`${this.url}/delete/${id}`).pipe(
       catchError(error => {
         return this.handleError(error);
       }),

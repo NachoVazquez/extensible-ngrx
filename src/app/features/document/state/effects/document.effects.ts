@@ -2,9 +2,12 @@ import { Injectable } from '@angular/core';
 import { BaseEntityEffects } from 'src/app/shared/state/base-entity.effects';
 import { DocumentModel } from '../../../../core/models/document.model';
 import { DocumentService } from '../../../../core/services/document.service';
-import { Actions, Effect } from '@ngrx/effects';
-import { Observable } from 'rxjs';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Observable, of } from 'rxjs';
 import { Action } from '@ngrx/store';
+
+import * as actions from '../actions/document.actions';
+import { map, concatMap, mergeMap, catchError } from 'rxjs/operators';
 
 @Injectable()
 export class DocumentEffects extends BaseEntityEffects<DocumentModel, number> {
@@ -29,4 +32,18 @@ export class DocumentEffects extends BaseEntityEffects<DocumentModel, number> {
 
   @Effect()
   public deleteDocument$: Observable<Action> = this.deleteEntity$();
+
+  @Effect()
+  public archiveDocument$: Observable<Action> = this.actions$.pipe(
+    ofType(actions.ARCHIVE_DOCUMENT),
+    map((action: actions.ArchiveDocumentAction) => action.payload),
+    mergeMap(documentToArchive => {
+      return this.documentService.archive(documentToArchive.id).pipe(
+        mergeMap(() => [new actions.ArchiveDocumentSuccessAction()]),
+        catchError(err => {
+          return of(new actions.ArchiveDocumentErrorAction(documentToArchive));
+        })
+      );
+    })
+  );
 }

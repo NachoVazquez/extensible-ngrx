@@ -125,14 +125,14 @@ export abstract class BaseEntityEffects<
     return this.actions$.pipe(
       ofType(crudActions.DeleteAction.getType<TEntity, TKey>(this.type)),
       map((action: crudActions.DeleteAction<TEntity, TKey>) => action.payload),
-      mergeMap(payload => {
-        return this.baseService.delete(payload.entityToDelete.id).pipe(
+      mergeMap(entityToDelete => {
+        return this.baseService.delete(entityToDelete.id).pipe(
           mergeMap(() => [new crudActions.DeleteSuccessAction(this.type)]),
           catchError(err => {
             return of(
               new crudActions.DeleteErrorAction<TEntity, TKey>(
                 this.type,
-                payload.entityToDelete
+                entityToDelete
               )
             );
           })

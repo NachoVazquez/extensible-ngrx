@@ -256,12 +256,7 @@ export class DeleteAction<TEntity extends BaseEntity<TKey>, TKey>
    * @param type The entity clazz
    * @param payload Contains the entity to delete.
    */
-  constructor(
-    private entityType: new () => TEntity,
-    public payload: {
-      entityToDelete: TEntity;
-    }
-  ) {}
+  constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
   static getType<TEntity extends BaseEntity<TKey>, TKey>(
     entityType: new () => TEntity
