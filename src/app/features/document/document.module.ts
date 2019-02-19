@@ -14,7 +14,7 @@ import { DocumentRoutingModule } from './document-routing.module';
   imports: [
     SharedModule,
     RouterModule,
-    StoreModule.forFeature(getTypeName(DocumentModel), {
+    StoreModule.forFeature('DocumentModel', {
       document: fromDocument.reducer
     }),
     EffectsModule.forFeature([DocumentEffects]),
