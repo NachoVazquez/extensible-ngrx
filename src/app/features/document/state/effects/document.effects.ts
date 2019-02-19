@@ -20,4 +20,13 @@ export class DocumentEffects extends BaseEntityEffects<DocumentModel, number> {
 
   @Effect()
   public getAllDocuments$: Observable<Action> = this.getAllEntities$();
+
+  @Effect()
+  public createDocument$: Observable<Action> = this.createEntity$();
+
+  @Effect()
+  public updateDocument$: Observable<Action> = this.updateEntity$();
+
+  @Effect()
+  public deleteDocument$: Observable<Action> = this.deleteEntity$();
 }
