@@ -7,14 +7,8 @@ import { ActionReducerMap, MetaReducer } from '@ngrx/store';
  * ensure that none of the reducers accidentally mutates the state.
  */
 import { storeFreeze } from 'ngrx-store-freeze';
-import { createSelector } from 'reselect';
 import { environment } from '../../../../environments/environment';
-/**
- * Every reducer module's default export is the reducer function itself. In
- * addition, each module should export a type or interface that describes
- * the state of the reducer plus any selector functions. The `* as`
- * notation packages up all of the exports into a single object.
- */
+
 
 /**
  * Interface defining the State of the URL
@@ -64,7 +58,3 @@ export const reducers: ActionReducerMap<State> = {
 export const metaReducers: Array<MetaReducer<State>> = !environment.production
   ? [storeFreeze]
   : [];
-
-//#region Selectors
-
-//#endregion

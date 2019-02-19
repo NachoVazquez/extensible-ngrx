@@ -1,6 +1,6 @@
 import { NavigationExtras, Params } from '@angular/router';
 export interface RouteModel {
-  path: any[];
+  path: string[];
   query?: Params;
   extras?: NavigationExtras;
 }
