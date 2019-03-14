@@ -48,7 +48,7 @@ export class GetByIdSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Get By id Success`;
+    return `[${typeName}] Get By Id Success`;
   }
 }
 
