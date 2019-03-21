@@ -26,7 +26,7 @@ export class GetByIdAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Get By id`;
+    return `[${typeName}] Get By Id`;
   }
 }
 
@@ -52,12 +52,12 @@ export class GetByIdSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   }
 }
 
-export class GetByIdErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+export class GetByIdFailureAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = GetByIdErrorAction.getType<TEntity, TKey>(this.entityType);
+  readonly type = GetByIdFailureAction.getType<TEntity, TKey>(this.entityType);
 
   /**
-   * Creates an instance of GetByIdErrorAction.
+   * Creates an instance of GetByIdFailureAction.
    * @param type The entity clazz
    * @param  payload The error.
    */
@@ -69,7 +69,7 @@ export class GetByIdErrorAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Get By id Error`;
+    return `[${typeName}] Get By Id Failure`;
   }
 }
 
@@ -108,9 +108,9 @@ export class GetAllSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   }
 }
 
-export class GetAllErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+export class GetAllFailureAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = GetAllErrorAction.getType<TEntity, TKey>(this.entityType);
+  readonly type = GetAllFailureAction.getType<TEntity, TKey>(this.entityType);
 
   constructor(
     private entityType: new () => TEntity,
@@ -121,7 +121,7 @@ export class GetAllErrorAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Get All Error`;
+    return `[${typeName}] Get All Failure`;
   }
 }
 
@@ -166,12 +166,12 @@ export class CreateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   }
 }
 
-export class CreateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+export class CreateFailureAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = CreateErrorAction.getType<TEntity, TKey>(this.entityType);
+  readonly type = CreateFailureAction.getType<TEntity, TKey>(this.entityType);
 
   /**
-   * Creates an instance of CreateErrorAction.
+   * Creates an instance of CreateFailureAction.
    * @param type The entity clazz
    * @param payload preassign id (optimistic approach) of the entity that was intended to be created.
    */
@@ -181,7 +181,7 @@ export class CreateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Create Error`;
+    return `[${typeName}] Create Failure`;
   }
 }
 
@@ -229,13 +229,13 @@ export class UpdateSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   }
 }
 
-export class UpdateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+export class UpdateFailureAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = UpdateErrorAction.getType<TEntity, TKey>(this.entityType);
+  readonly type = UpdateFailureAction.getType<TEntity, TKey>(this.entityType);
   /**
-   * Creates an instance of UpdateErrorAction.
+   * Creates an instance of UpdateFailureAction.
    * @param type The entity clazz
-   * @param  payload Entity which updating Error containing original values (For optimistic approach)
+   * @param  payload Entity which updating Failure containing original values (For optimistic approach)
    */
   constructor(private entityType: new () => TEntity, public payload: TEntity) {}
 
@@ -243,7 +243,7 @@ export class UpdateErrorAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Update Error`;
+    return `[${typeName}] Update Failure`;
   }
 }
 
@@ -285,12 +285,12 @@ export class DeleteSuccessAction<TEntity extends BaseEntity<TKey>, TKey>
   }
 }
 
-export class DeleteErrorAction<TEntity extends BaseEntity<TKey>, TKey>
+export class DeleteFailureAction<TEntity extends BaseEntity<TKey>, TKey>
   implements Action {
-  readonly type = DeleteErrorAction.getType<TEntity, TKey>(this.entityType);
+  readonly type = DeleteFailureAction.getType<TEntity, TKey>(this.entityType);
 
   /**
-   * Creates an instance of DeleteErrorAction.
+   * Creates an instance of DeleteFailureAction.
    * @param type The entity clazz
    * @param payload The entity wish deletion failed (For the optimistic approach)
    */
@@ -300,23 +300,23 @@ export class DeleteErrorAction<TEntity extends BaseEntity<TKey>, TKey>
     entityType: new () => TEntity
   ): string {
     const typeName = getTypeName(entityType);
-    return `[${typeName}] Delete Error`;
+    return `[${typeName}] Delete Failure`;
   }
 }
 
 export type CrudActions<TEntity extends BaseEntity<TKey>, TKey> =
   | CreateAction<TEntity, TKey>
   | CreateSuccessAction<TEntity, TKey>
-  | CreateErrorAction<TEntity, TKey>
+  | CreateFailureAction<TEntity, TKey>
   | GetAllAction<TEntity, TKey>
-  | GetAllErrorAction<TEntity, TKey>
+  | GetAllFailureAction<TEntity, TKey>
   | GetAllSuccessAction<TEntity, TKey>
   | GetByIdAction<TEntity, TKey>
   | GetByIdSuccessAction<TEntity, TKey>
-  | GetByIdErrorAction<TEntity, TKey>
+  | GetByIdFailureAction<TEntity, TKey>
   | UpdateAction<TEntity, TKey>
   | UpdateSuccessAction<TEntity, TKey>
-  | UpdateErrorAction<TEntity, TKey>
+  | UpdateFailureAction<TEntity, TKey>
   | DeleteAction<TEntity, TKey>
   | DeleteSuccessAction<TEntity, TKey>
-  | DeleteErrorAction<TEntity, TKey>;
+  | DeleteFailureAction<TEntity, TKey>;
