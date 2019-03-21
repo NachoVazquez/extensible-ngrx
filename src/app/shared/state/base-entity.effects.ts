@@ -35,7 +35,7 @@ export abstract class BaseEntityEffects<
             }),
             catchError((error: CustomError) =>
               of(
-                new crudActions.GetByIdErrorAction<TEntity, TKey>(
+                new crudActions.GetByIdFailureAction<TEntity, TKey>(
                   this.type,
                   error
                 )
@@ -60,7 +60,10 @@ export abstract class BaseEntityEffects<
           }),
           catchError((error: CustomError) =>
             of(
-              new crudActions.GetAllErrorAction<TEntity, TKey>(this.type, error)
+              new crudActions.GetAllFailureAction<TEntity, TKey>(
+                this.type,
+                error
+              )
             )
           )
         );
@@ -82,7 +85,7 @@ export abstract class BaseEntityEffects<
           ]),
           catchError(err => {
             return of(
-              new crudActions.CreateErrorAction<TEntity, TKey>(
+              new crudActions.CreateFailureAction<TEntity, TKey>(
                 this.type,
                 payload.tempId
               )
@@ -110,7 +113,7 @@ export abstract class BaseEntityEffects<
             ),
             catchError(err =>
               of(
-                new crudActions.UpdateErrorAction<TEntity, TKey>(
+                new crudActions.UpdateFailureAction<TEntity, TKey>(
                   this.type,
                   payload.oldEntity
                 )
@@ -130,7 +133,7 @@ export abstract class BaseEntityEffects<
           mergeMap(() => [new crudActions.DeleteSuccessAction(this.type)]),
           catchError(err => {
             return of(
-              new crudActions.DeleteErrorAction<TEntity, TKey>(
+              new crudActions.DeleteFailureAction<TEntity, TKey>(
                 this.type,
                 entityToDelete
               )

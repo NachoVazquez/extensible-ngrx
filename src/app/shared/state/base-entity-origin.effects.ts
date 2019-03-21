@@ -6,7 +6,7 @@ import { BaseEntity } from '../models/base-entity.model';
 import { BaseCrudService } from '../services/base-crud.service';
 import { Observable, of } from 'rxjs';
 
-import * as crudActions from '../../shared/state/base-crud-origin.actions';
+import * as crudActions from './base-crud-origin.actions';
 
 export abstract class BaseEntityEffects<
   TEntity extends BaseEntity<TKey>,
@@ -18,7 +18,7 @@ export abstract class BaseEntityEffects<
     protected actions$: Actions,
     protected baseService: BaseCrudService<TEntity, TKey>
   ) {
-    this.httpResponseContext = `${crudActions.getTypeName(type)} API`;
+    this.httpResponseContext = `${crudActions.getTypeName(type)}/API`;
   }
 
   public getEntityById$(): Observable<Action> {
@@ -43,7 +43,7 @@ export abstract class BaseEntityEffects<
             }),
             catchError((error: CustomError) =>
               of(
-                new crudActions.GetByIdErrorAction<TEntity, TKey>(
+                new crudActions.GetByIdFailureAction<TEntity, TKey>(
                   this.type,
                   error,
                   this.httpResponseContext
@@ -74,7 +74,7 @@ export abstract class BaseEntityEffects<
           }),
           catchError((error: CustomError) =>
             of(
-              new crudActions.GetAllErrorAction<TEntity, TKey>(
+              new crudActions.GetAllFailureAction<TEntity, TKey>(
                 this.type,
                 error,
                 this.httpResponseContext
@@ -108,7 +108,7 @@ export abstract class BaseEntityEffects<
           ]),
           catchError(err => {
             return of(
-              new crudActions.CreateErrorAction<TEntity, TKey>(
+              new crudActions.CreateFailureAction<TEntity, TKey>(
                 this.type,
                 payload.tempId,
                 this.httpResponseContext
@@ -142,7 +142,7 @@ export abstract class BaseEntityEffects<
             ),
             catchError(err =>
               of(
-                new crudActions.UpdateErrorAction<TEntity, TKey>(
+                new crudActions.UpdateFailureAction<TEntity, TKey>(
                   this.type,
                   payload.oldEntity,
                   this.httpResponseContext
@@ -172,7 +172,7 @@ export abstract class BaseEntityEffects<
           ]),
           catchError(err => {
             return of(
-              new crudActions.DeleteErrorAction<TEntity, TKey>(
+              new crudActions.DeleteFailureAction<TEntity, TKey>(
                 this.type,
                 entityToDelete,
                 this.httpResponseContext
