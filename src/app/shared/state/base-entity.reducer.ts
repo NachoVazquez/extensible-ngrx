@@ -2,7 +2,8 @@ import { BaseEntity } from '../models/base-entity.model';
 import { BaseEntityState } from './base-entity.state';
 
 import * as crudActions from './base-crud.actions';
-import { DocumentModel } from 'src/app/core/models/document.model';
+
+import { Map } from 'immutable';
 
 /**
  * Modify the state responding to CRUD Actions.
@@ -24,6 +25,7 @@ export function baseReducer<TEntity extends BaseEntity<TKey>, TKey>(
 
   switch (action.type) {
     case crudActions.GetByIdAction.getType<TEntity, TKey>(type):
+    case crudActions.GetAllAction.getType<TEntity, TKey>(type):
       return { ...state, loading: true };
 
     case crudActions.GetByIdSuccessAction.getType<TEntity, TKey>(type):
@@ -34,14 +36,29 @@ export function baseReducer<TEntity extends BaseEntity<TKey>, TKey>(
         entities: state.entities.set(action.payload.id, action.payload)
       };
 
-    case crudActions.GetByIdErrorAction.getType(type):
+    case crudActions.GetByIdFailureAction.getType(type):
+    case crudActions.GetAllFailureAction.getType(type):
+    case crudActions.DeleteSuccessAction.getType(type):
       return { ...state, loading: false };
+
+    case crudActions.GetAllSuccessAction.getType<TEntity, TKey>(type):
+      action = action as crudActions.GetAllSuccessAction<TEntity, TKey>;
+      return {
+        ...state,
+        loading: false,
+        entities: state.entities.merge(
+          action.payload.reduce((acc, curr) => {
+            return acc.set(curr.id, curr);
+          }, Map<TKey, TEntity>())
+        )
+      };
 
     case crudActions.CreateAction.getType(type):
       action = action as crudActions.CreateAction<TEntity, TKey>;
       return {
         ...state,
-        entities: state.entities.set(action.payload.id, action.payload)
+        entities: state.entities.set(action.payload.tempId, action.payload),
+        loading: true
       };
 
     case crudActions.CreateSuccessAction.getType(type):
@@ -50,15 +67,17 @@ export function baseReducer<TEntity extends BaseEntity<TKey>, TKey>(
         ...state,
         entities: state.entities
           .delete(action.payload.tempId)
-          .set(action.payload.createdEntity.id, action.payload.createdEntity)
+          .set(action.payload.createdEntity.id, action.payload.createdEntity),
+        loading: false
       };
 
-    case crudActions.CreateErrorAction.getType(type):
-      action = action as crudActions.CreateErrorAction<TEntity, TKey>;
+    case crudActions.CreateFailureAction.getType(type):
+      action = action as crudActions.CreateFailureAction<TEntity, TKey>;
 
       return {
         ...state,
-        entities: state.entities.delete(action.payload)
+        entities: state.entities.delete(action.payload),
+        loading: false
       };
 
     case crudActions.UpdateAction.getType(type):
@@ -68,34 +87,43 @@ export function baseReducer<TEntity extends BaseEntity<TKey>, TKey>(
         entities: state.entities.set(
           action.payload.newEntity.id,
           action.payload.newEntity
-        )
+        ),
+        loading: true
       };
+
     case crudActions.UpdateSuccessAction.getType(type):
       action = action as crudActions.UpdateSuccessAction<TEntity, TKey>;
 
       return {
         ...state,
-        entities: state.entities.set(action.payload.id, action.payload)
+        entities: state.entities.set(action.payload.id, action.payload),
+        loading: false
       };
-    case crudActions.UpdateErrorAction.getType(type):
-      action = action as crudActions.UpdateErrorAction<TEntity, TKey>;
+
+    case crudActions.UpdateFailureAction.getType(type):
+      action = action as crudActions.UpdateFailureAction<TEntity, TKey>;
 
       return {
         ...state,
-        entities: state.entities.set(action.payload.id, action.payload)
+        entities: state.entities.set(action.payload.id, action.payload),
+        loading: false
       };
+
     case crudActions.DeleteAction.getType(type):
       action = action as crudActions.DeleteAction<TEntity, TKey>;
       return {
         ...state,
-        entities: state.entities.delete(action.payload.id)
+        entities: state.entities.delete(action.payload.id),
+        loading: true
       };
-    case crudActions.DeleteErrorAction.getType(type):
-      action = action as crudActions.DeleteErrorAction<TEntity, TKey>;
+
+    case crudActions.DeleteFailureAction.getType(type):
+      action = action as crudActions.DeleteFailureAction<TEntity, TKey>;
 
       return {
         ...state,
-        entities: state.entities.set(action.payload.id, action.payload)
+        entities: state.entities.set(action.payload.id, action.payload),
+        loading: false
       };
 
     default:
