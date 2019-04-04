@@ -32,6 +32,8 @@
     "immutable": "^4.0.0-rc.12",
     "reselect": "4.0.0",
     "rxjs": "~6.4.0",
+    "stampit": "^4.2.0",
+    "ts-action": "^8.0.0",
     "zone.js": "~0.8.29"
   },
   "devDependencies": {
@@ -43,8 +45,8 @@
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "~10.9.4",
     "codelyzer": "~4.5.0",
-    "jasmine-marbles": "^0.4.0",
     "jasmine-core": "~2.99.1",
+    "jasmine-marbles": "^0.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.0.0",
     "karma-chrome-launcher": "~2.2.0",

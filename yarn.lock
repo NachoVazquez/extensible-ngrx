@@ -6404,6 +6404,11 @@ ssri@^6.0.0, ssri@^6.0.1:
   dependencies:
     figgy-pudding "^3.5.1"
 
+stampit@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/stampit/-/stampit-4.2.0.tgz#cba11802a232377aba7adf55e915d2f3c0ce47b3"
+  integrity sha512-icN8+Ojcc3ejo4KaSNclP+prMX4iuYQk7l7JXUyf+E+Fwpe/jTMqR2NqkUWP8PH9v4lWWsIdNkmHub1ppcshlA==
+
 static-extend@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/static-extend/-/static-extend-0.1.2.tgz#60809c39cbff55337226fd5e0b520f341f1fb5c6"
@@ -6799,6 +6804,11 @@ trim-right@^1.0.1:
   integrity sha512-m6s2OdQe5wgpFMC+pAJ+q9djG82O2jcHPOI6RNg1yy9rCYR+WD6Nbpl32fDpfC56nirdRy+opFa/Vk7HYhqaew==
   dependencies:
     glob "^7.1.2"
+
+ts-action@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/ts-action/-/ts-action-8.0.0.tgz#4cce6898bdeda537212447bef234855d1c83702b"
+  integrity sha512-gNKByCGxhU1R0TH5Zw9RwOWf7SGIxN/ENgDqj50HqWq42NtS/16A6NUyIJC82/AHFytpbefAtwc1UnuB0uR2Fw==
 
 ts-node@~8.0.3:
   version "8.0.3"
