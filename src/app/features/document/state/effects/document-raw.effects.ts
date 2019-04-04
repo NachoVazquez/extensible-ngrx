@@ -9,7 +9,7 @@ import * as actions from '../actions/document-raw.actions';
 @Injectable()
 export class DocumentRawEffects {
   constructor(
-    private actions$: Actions,
+    private actions$: Actions<actions.DocumentActions>,
     private documentService: DocumentService
   ) {}
 

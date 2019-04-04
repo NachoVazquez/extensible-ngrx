@@ -14,6 +14,13 @@ export class ArchiveDocumentAction implements Action {
   constructor(public readonly payload: DocumentModel) {}
 }
 
+export function archiveDocument(documentToArchive: DocumentModel) {
+  return {
+    type: ARCHIVE_DOCUMENT,
+    payload: documentToArchive
+  };
+}
+
 export class ArchiveDocumentSuccessAction implements Action {
   public readonly type = ARCHIVE_DOCUMENT_SUCCESS;
   public payload: void;

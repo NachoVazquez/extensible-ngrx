@@ -47,7 +47,7 @@ export class GetAllErrorRawAction implements Action {
   constructor(public readonly payload: CustomError) {}
 }
 
-export type Actions =
+export type DocumentActions =
   | GetByIdRawAction
   | GetByIdSuccessRawAction
   | GetByIdErrorRawAction

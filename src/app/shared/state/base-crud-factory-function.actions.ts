@@ -1,20 +1,20 @@
 import { BaseEntity } from '../models/base-entity.model';
-import { action, union, payload } from 'ts-action';
-import { TestingCompilerFactory } from '@angular/core/testing/src/test_compiler';
 
-export function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(
-  type: new () => TEntity
-): string {
+export function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
+  new (): TEntity;
+}): string {
   // Necessary tight coupling
   return new type().constructor.name;
 }
 
-const getById = <TEntity extends BaseEntity<TKey>, TKey>(
-  type: new () => TEntity
-) => action(getByIdActionType(type), payload<number>());
+export function getById<TEntity extends BaseEntity<TKey>, TKey>(
+  entityType: new () => TEntity,
+  entityId: TKey
+) {
+  return { type: getByIdActionType(entityType), payload: entityId };
+}
 
-
-function getByIdActionType<TEntity extends BaseEntity<TKey>, TKey>(
+export function getByIdActionType<TEntity extends BaseEntity<TKey>, TKey>(
   entityType: new () => TEntity
 ): string {
   const typeName = getTypeName(entityType);

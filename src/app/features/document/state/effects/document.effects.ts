@@ -12,7 +12,7 @@ import { map, concatMap, mergeMap, catchError } from 'rxjs/operators';
 @Injectable()
 export class DocumentEffects extends BaseEntityEffects<DocumentModel, number> {
   constructor(
-    protected actions$: Actions,
+    protected actions$: Actions<actions.DocumentActions>,
     protected documentService: DocumentService
   ) {
     super(DocumentModel, actions$, documentService);

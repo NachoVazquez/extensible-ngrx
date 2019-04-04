@@ -18,7 +18,7 @@ const INITIAL_STATE: DocumentRawState = {
 
 export function reducer(
   state = INITIAL_STATE,
-  action: actions.Actions
+  action: actions.DocumentActions
 ): DocumentRawState {
   // A protection for null or undefined actions.
   // Trust me can happen and cause pain.
@@ -27,9 +27,10 @@ export function reducer(
   }
 
   switch (action.type) {
-    case actions.GET_BY_ID_RAW: {
+    case actions.GET_BY_ID_RAW:
+    case actions.GET_ALL_RAW:
       return { ...state, loading: true };
-    }
+
     case actions.GET_BY_ID_SUCCESS_RAW: {
       action = action as actions.GetByIdSuccessRawAction;
       return {
