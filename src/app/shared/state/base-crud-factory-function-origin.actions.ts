@@ -1,23 +1,49 @@
 import { BaseEntity } from '../models/base-entity.model';
 import { CustomError } from '../error-handling';
+import { action, payload } from 'ts-action';
 
-export function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(type: {
-  new (): TEntity;
-}): string {
+//   export enum AuthApiActionTypes {
+//   LoginSuccess = '[Auth/API] Login Success',
+//   LoginFailure = '[Auth/API] Login Failure',
+//   LoginRedirect = '[Auth/API] Login Redirect',
+// }
+
+// export const AuthApiActions = {
+//   loginRedirect: () => createAction(AuthApiActionTypes.LoginRedirect),
+//   loginSuccess: (user: User) =>
+//     createAction(AuthApiActionTypes.LoginSuccess, { user }),
+//   loginFailure: (error: any) =>
+//     createAction(AuthApiActionTypes.LoginFailure, { error }),
+// };
+
+// export type AuthApiActions = ActionsUnion<typeof AuthApiActions>;
+
+export function getTypeName<TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity
+): string {
   // Necessary tight coupling
   return new type().constructor.name;
 }
 
-export function getById<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
-  entityId: TKey,
+// export function getById<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   entityId: TKey,
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${getByIdActionContextlessType(entityType)}`,
+//     payload: entityId
+//   };
+// }
+
+export const getById = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
   context: string
-) {
-  return {
-    type: `[${context}] ${getByIdActionContextlessType(entityType)}`,
-    payload: entityId
-  };
-}
+) =>
+  action(
+    `[${context}] ${getByIdActionContextlessType(type)}`,
+    payload<number>()
+  );
 
 export function getByIdActionContextlessType<
   TEntity extends BaseEntity<TKey>,
@@ -27,16 +53,25 @@ export function getByIdActionContextlessType<
   return `[${typeName}] Get By id`;
 }
 
-export function getByIdSuccess<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
-  entityById: TEntity,
+// export function getByIdSuccess<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   entityById: TEntity,
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${getByIdSuccessContextlessType(entityType)}`,
+//     payload: entityById
+//   };
+// }
+
+export const getByIdSuccess = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
   context: string
-) {
-  return {
-    type: `[${context}] ${getByIdSuccessContextlessType(entityType)}`,
-    payload: entityById
-  };
-}
+) =>
+  action(
+    `[${context}] ${getByIdSuccessContextlessType(type)}`,
+    payload<TEntity>()
+  );
 
 export function getByIdSuccessContextlessType<
   TEntity extends BaseEntity<TKey>,
@@ -46,35 +81,49 @@ export function getByIdSuccessContextlessType<
   return `[${typeName}] Get By Id Success`;
 }
 
-export function getByIdError<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
-  error: CustomError,
-  context: string
-) {
-  return {
-    type: `[${context}] ${getByIdErrorContextlessType<TEntity, TKey>(
-      entityType
-    )}`,
-    payload: error
-  };
-}
+// export function getByIdFailure<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   error: CustomError,
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${getByIdFailureContextlessType<TEntity, TKey>(
+//       entityType
+//     )}`,
+//     payload: error
+//   };
+// }
 
-export function getByIdErrorContextlessType<
+export const getByIdFailure = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
+  context: string
+) =>
+  action(
+    `[${context}] ${getByIdFailureContextlessType(type)}`,
+    payload<CustomError>()
+  );
+
+export function getByIdFailureContextlessType<
   TEntity extends BaseEntity<TKey>,
   TKey
 >(entityType: new () => TEntity): string {
   const typeName = getTypeName(entityType);
-  return `[${typeName}] Get By Id Error`;
+  return `[${typeName}] Get By Id Failure`;
 }
 
-export function getAll<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
+// export function getAll<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${getAllContextlessType<TEntity, TKey>(entityType)}`
+//   };
+// }
+
+export const getAll = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
   context: string
-) {
-  return {
-    type: `[${context}] ${getAllContextlessType<TEntity, TKey>(entityType)}`
-  };
-}
+) => action(`[${context}] ${getAllContextlessType(type)}`);
 
 export function getAllContextlessType<TEntity extends BaseEntity<TKey>, TKey>(
   entityType: new () => TEntity
@@ -83,18 +132,27 @@ export function getAllContextlessType<TEntity extends BaseEntity<TKey>, TKey>(
   return `[${typeName}] Get All`;
 }
 
-export function getAllSuccess<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
-  allEntities: TEntity[],
+// export function getAllSuccess<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   allEntities: TEntity[],
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${getAllSuccessContextlessType<TEntity, TKey>(
+//       entityType
+//     )}`,
+//     payload: allEntities
+//   };
+// }
+
+export const getAllSuccess = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
   context: string
-) {
-  return {
-    type: `[${context}] ${getAllSuccessContextlessType<TEntity, TKey>(
-      entityType
-    )}`,
-    payload: allEntities
-  };
-}
+) =>
+  action(
+    `[${context}] ${getAllSuccessContextlessType(type)}`,
+    payload<TEntity[]>()
+  );
 
 export function getAllSuccessContextlessType<
   TEntity extends BaseEntity<TKey>,
@@ -104,37 +162,51 @@ export function getAllSuccessContextlessType<
   return `[${typeName}] Get All Success`;
 }
 
-export function getAllError<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
-  error: CustomError,
-  context: string
-) {
-  return {
-    type: `[${context}] ${getAllErrorContextlessType<TEntity, TKey>(
-      entityType
-    )}`,
-    payload: error
-  };
-}
+// export function getAllFailure<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   error: CustomError,
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${getAllFailureContextlessType<TEntity, TKey>(
+//       entityType
+//     )}`,
+//     payload: error
+//   };
+// }
 
-export function getAllErrorContextlessType<
+export const getAllFailure = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
+  context: string
+) =>
+  action(
+    `[${context}] ${getAllFailureContextlessType(type)}`,
+    payload<CustomError>()
+  );
+
+export function getAllFailureContextlessType<
   TEntity extends BaseEntity<TKey>,
   TKey
 >(entityType: new () => TEntity): string {
   const typeName = getTypeName(entityType);
-  return `[${typeName}] Get All Error`;
+  return `[${typeName}] Get All Failure`;
 }
 
-export function createEntity<TEntity extends BaseEntity<TKey>, TKey>(
-  entityType: new () => TEntity,
-  entityToCreate: TEntity,
+// export function createEntity<TEntity extends BaseEntity<TKey>, TKey>(
+//   entityType: new () => TEntity,
+//   entityToCreate: TEntity,
+//   context: string
+// ) {
+//   return {
+//     type: `[${context}] ${createContextlessType<TEntity, TKey>(entityType)}`,
+//     payload: entityToCreate
+//   };
+// }
+
+export const createEntity = <TEntity extends BaseEntity<TKey>, TKey>(
+  type: new () => TEntity,
   context: string
-) {
-  return {
-    type: `[${context}] ${createContextlessType<TEntity, TKey>(entityType)}`,
-    payload: entityToCreate
-  };
-}
+) => action(`[${context}] ${createContextlessType(type)}`, payload<TEntity>());
 
 export function createContextlessType<TEntity extends BaseEntity<TKey>, TKey>(
   entityType: new () => TEntity
@@ -164,25 +236,25 @@ export function createSuccessContextlessType<
   return `[${typeName}] Create Success`;
 }
 
-export function createEntityError<TEntity extends BaseEntity<TKey>, TKey>(
+export function createEntityFailure<TEntity extends BaseEntity<TKey>, TKey>(
   entityType: new () => TEntity,
   tempIdOfEntity: string,
   context: string
 ) {
   return {
-    type: `[${context}] ${createErrorContextlessType<TEntity, TKey>(
+    type: `[${context}] ${createFailureContextlessType<TEntity, TKey>(
       entityType
     )}`,
     payload: tempIdOfEntity
   };
 }
 
-export function createErrorContextlessType<
+export function createFailureContextlessType<
   TEntity extends BaseEntity<TKey>,
   TKey
 >(entityType: new () => TEntity) {
   const typeName = getTypeName(entityType);
-  return `[${typeName}] Create Error`;
+  return `[${typeName}] Create Failure`;
 }
 
 export function updateEntity<TEntity extends BaseEntity<TKey>, TKey>(
@@ -222,23 +294,23 @@ export function updateSuccessContextlessType<
   return `[${typeName}] Update Success`;
 }
 
-export function updateEntityError<TEntity extends BaseEntity<TKey>, TKey>(
+export function updateEntityFailure<TEntity extends BaseEntity<TKey>, TKey>(
   entityType: new () => TEntity,
   originalEntity: TEntity,
   context: string
 ) {
   return {
-    type: `[${context}] ${updateErrorContextlessType(entityType)}`,
+    type: `[${context}] ${updateFailureContextlessType(entityType)}`,
     payload: originalEntity
   };
 }
 
-export function updateErrorContextlessType<
+export function updateFailureContextlessType<
   TEntity extends BaseEntity<TKey>,
   TKey
 >(entityType: new () => TEntity): string {
   const typeName = getTypeName(entityType);
-  return `[${typeName}] Update Error`;
+  return `[${typeName}] Update Failure`;
 }
 
 export function deleteEntity<TEntity extends BaseEntity<TKey>, TKey>(
@@ -276,21 +348,21 @@ export function deleteSuccessContextlessType<
   return `[${typeName}] Delete Success`;
 }
 
-export function deleteEntityError<TEntity extends BaseEntity<TKey>, TKey>(
+export function deleteEntityFailure<TEntity extends BaseEntity<TKey>, TKey>(
   entityType: new () => TEntity,
   entityOptimisticallyDeleted: TEntity,
   context: string
 ) {
   return {
-    type: `[${context}] ${deleteErrorContextlessType(entityType)}`,
+    type: `[${context}] ${deleteFailureContextlessType(entityType)}`,
     payload: entityOptimisticallyDeleted
   };
 }
 
-export function deleteErrorContextlessType<
+export function deleteFailureContextlessType<
   TEntity extends BaseEntity<TKey>,
   TKey
 >(entityType: new () => TEntity): string {
   const typeName = getTypeName(entityType);
-  return `[${typeName}] Delete Error`;
+  return `[${typeName}] Delete Failure`;
 }
